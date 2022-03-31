@@ -12,6 +12,11 @@ public:
     uint8_t REGISTERS[7]; // 7 8-bit registers
 
     uint16_t PC;
-
     uint16_t SP;
+
+    unsigned char cf; //Carry flag
+    unsigned char cfa;//Auxiliary carry flag
+    unsigned char sf; //Sign flag
+    unsigned char zf; //Zero flag
+    unsigned char pf; //Parity flag;
 };

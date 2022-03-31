@@ -39,16 +39,20 @@ void CPU::loadGame(std::vector<std::string> files) {
 	
 }
 
-void CPU::cycle() {
-	uint8_t opcode = MEMORY[PC];
+//TODO
+/*
+	- Correct d4 and 0d confusion
+*/
 
+void CPU::cycle() {
+	uint8_t opcode = PC > 0xff ? MEMORY[(PC >> 8)] : MEMORY[PC];
 	switch (opcode) {
 
 		//NOP Size: 1
 	case 0x00: {
+		std::cout << "0x00 NOP" << std::endl;
 		PC += 1;
 	}break;
-
 		//LXI B, D16 Size: 3
 	case 0x01: {
 
@@ -106,7 +110,9 @@ void CPU::cycle() {
 
 		//DCR C Size: 1
 	case 0x0d: {
-
+		std::cout << "DRC C" << std::endl;
+		REGISTERS[1] -= 1;
+		PC += 1;
 	}break;
 
 		//MVI C, D8 Size: 2
@@ -986,7 +992,11 @@ void CPU::cycle() {
 
 		//JMP adr Size: 3
 	case 0xc3: {
-
+		uint8_t fstB = MEMORY[PC + 1];
+		uint8_t sndB = MEMORY[PC + 2];
+		uint16_t adr = (fstB << 8) + sndB;
+		std::cout << "JMP " << adr <<std::endl;
+		PC = adr;
 	}break;
 
 		//CNZ adr Size: 3
@@ -1066,6 +1076,10 @@ void CPU::cycle() {
 
 		//CNC adr Size: 1
 	case 0xd4: {
+		std::cout << "PC: " << PC << " CNC adr" << std::endl;
+		if (!cf) {
+
+		}
 
 	}break;
 
