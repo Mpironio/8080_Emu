@@ -9,8 +9,9 @@ int main() {
 	bool quit = false;
 	char state = 'n';
 	while (!quit) {
-		std::cout << "PC: " << std::hex << cpu.PC << " ";
+		std::cout << "PC: " << std::hex << cpu.PC << " " << std::endl;
 		cpu.cycle();
+		std::cout << "////////////////////////////////////////////////////" << std::endl << std::endl;
 	}
 	
 

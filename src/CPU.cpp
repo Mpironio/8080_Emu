@@ -45,7 +45,9 @@ void CPU::loadGame(std::vector<std::string> files) {
 */
 
 void CPU::cycle() {
-	uint8_t opcode = PC > 0xff ? MEMORY[(PC >> 8)] : MEMORY[PC];
+	uint8_t opcode = MEMORY[PC];
+
+	std::cout << std::hex << "Opcode: " << (int)opcode << " Instruction: ";
 	switch (opcode) {
 
 		//NOP Size: 1
@@ -195,9 +197,18 @@ void CPU::cycle() {
 
 	}break;
 
+	case 0x20: {
+		PC += 1;
+	} break;
+
 		//LXI H, D16 Size: 3
 	case 0x21: {
-
+		uint16_t fstB = MEMORY[PC + 1];
+		uint16_t sndB = MEMORY[PC + 2];
+		uint16_t adr = (sndB << 8) + fstB; //Little endian 
+		REGISTERS[6] = fstB;
+		REGISTERS[5] = sndB;
+		PC += 3;
 	}break;
 
 		//SHLD adr Size: 3
@@ -992,9 +1003,9 @@ void CPU::cycle() {
 
 		//JMP adr Size: 3
 	case 0xc3: {
-		uint8_t fstB = MEMORY[PC + 1];
-		uint8_t sndB = MEMORY[PC + 2];
-		uint16_t adr = (fstB << 8) + sndB;
+		uint16_t fstB = MEMORY[PC + 1];
+		uint16_t sndB = MEMORY[PC + 2];
+		uint16_t adr = (sndB << 8) + fstB; //Little endian 
 		std::cout << "JMP " << adr <<std::endl;
 		PC = adr;
 	}break;
