@@ -44,6 +44,12 @@ void CPU::loadGame(std::vector<std::string> files) {
 	- Correct d4 and 0d confusion
 */
 
+
+//DATA
+/*
+	REGISTERS: A B C D E H L
+			   0 1 2 3 4 5 6
+*/
 void CPU::cycle() {
 	uint8_t opcode = MEMORY[PC];
 
@@ -82,7 +88,8 @@ void CPU::cycle() {
 
 		//MVI B, D8 Size: 2
 	case 0x06: {
-
+		REGISTERS[1] = MEMORY[PC + 1];
+		PC += 2;
 	}break;
 
 		//RLC Size: 1
@@ -203,11 +210,11 @@ void CPU::cycle() {
 
 		//LXI H, D16 Size: 3
 	case 0x21: {
-		uint16_t fstB = MEMORY[PC + 1];
-		uint16_t sndB = MEMORY[PC + 2];
-		uint16_t adr = (sndB << 8) + fstB; //Little endian 
-		REGISTERS[6] = fstB;
-		REGISTERS[5] = sndB;
+		uint16_t fstB = MEMORY[PC + 2];
+		uint16_t sndB = MEMORY[PC + 1];
+		uint16_t adr = (fstB << 8) + sndB; //Little endian 
+		REGISTERS[6] = sndB;
+		REGISTERS[5] = fstB;
 		PC += 3;
 	}break;
 
@@ -278,7 +285,12 @@ void CPU::cycle() {
 
 		//LXI SP, D16 Size: 3
 	case 0x31: {
-
+		uint8_t fstB = MEMORY[PC + 2];
+		uint8_t sndB = MEMORY[PC + 1];
+		uint16_t adr = (fstB << 8) + sndB;
+		SP = adr;
+		std::cout << "LXI SP, " << adr << std::endl;
+		PC += 3;
 	}break;
 
 		//STA adr Size: 3
