@@ -39,10 +39,6 @@ void CPU::loadGame(std::vector<std::string> files) {
 	
 }
 
-//TODO
-/*
-	- Correct d4 and 0d confusion
-*/
 
 
 //DATA
@@ -52,6 +48,7 @@ void CPU::loadGame(std::vector<std::string> files) {
 */
 void CPU::cycle() {
 	uint8_t opcode = MEMORY[PC];
+	uint16_t adr = (MEMORY[PC + 2] << 8) + MEMORY[PC + 1];
 
 	std::cout << std::hex << "Opcode: " << (int)opcode << " Instruction: ";
 	switch (opcode) {
@@ -68,6 +65,7 @@ void CPU::cycle() {
 
 		//STAX B Size: 1
 	case 0x02: {
+		std::cout << "STAX B" << "[" << std::hex << (int)((MEMORY[1] << 8) + MEMORY[2]) << "] <- " << (int)REGISTERS[0] << "rA" << std::endl;
 
 	}break;
 
@@ -88,6 +86,7 @@ void CPU::cycle() {
 
 		//MVI B, D8 Size: 2
 	case 0x06: {
+		std::cout << "MVI B, D8  B<- " << std::hex << (int)MEMORY[PC + 1] << std::endl;
 		REGISTERS[1] = MEMORY[PC + 1];
 		PC += 2;
 	}break;
@@ -119,7 +118,7 @@ void CPU::cycle() {
 
 		//DCR C Size: 1
 	case 0x0d: {
-		std::cout << "DRC C" << std::endl;
+		std::cout << "DRC C <- C-1" << std::endl;
 		REGISTERS[1] -= 1;
 		PC += 1;
 	}break;
@@ -136,6 +135,12 @@ void CPU::cycle() {
 
 		//LXI D, D16 Size: 3
 	case 0x11: {
+		uint8_t fstB = MEMORY[PC + 2];
+		uint8_t sndB = MEMORY[PC + 1];
+		std::cout << "LXI D, D16  " << std::hex << "D<- " << (int)fstB << " E<- " << (int)sndB << std::endl;
+		REGISTERS[3] = fstB;
+		REGISTERS[4] = sndB;
+		PC += 3;
 
 	}break;
 
@@ -176,7 +181,9 @@ void CPU::cycle() {
 
 		//LDAX D Size: 1
 	case 0x1a: {
-
+		REGISTERS[0] = MEMORY[(REGISTERS[3] << 8) + REGISTERS[4]];
+		std::cout << "LDAX D  " << "A<- " << std::hex << "[" << (int)REGISTERS[0] << "] rDE" << std::endl;
+		PC += 1;
 	}break;
 
 		//DCX D Size: 1
@@ -212,9 +219,9 @@ void CPU::cycle() {
 	case 0x21: {
 		uint16_t fstB = MEMORY[PC + 2];
 		uint16_t sndB = MEMORY[PC + 1];
-		uint16_t adr = (fstB << 8) + sndB; //Little endian 
-		REGISTERS[6] = sndB;
+		std::cout << "LXI H, " << std::hex << (int)fstB << "" << (int)(sndB) << std::endl;
 		REGISTERS[5] = fstB;
+		REGISTERS[6] = sndB;
 		PC += 3;
 	}break;
 
@@ -635,7 +642,12 @@ void CPU::cycle() {
 
 		//MOV M, A Size: 1
 	case 0x77: {
-
+		uint8_t regH = REGISTERS[5];
+		uint8_t regL = REGISTERS[6];
+		uint16_t adr = (REGISTERS[5] << 8) + REGISTERS[6];
+		MEMORY[adr]  = REGISTERS[0];
+		std::cout << "MOV [" << std::hex << adr << "] <- " << (int)REGISTERS[0] << "rA" << std::endl;
+		PC += 1;
 	}break;
 
 		//MOV A, B Size: 1
@@ -1064,7 +1076,11 @@ void CPU::cycle() {
 
 		//CALL adr Size: 3
 	case 0xcd: {
-
+		uint16_t adr = (MEMORY[PC + 2] << 8) + MEMORY[PC + 1];
+		std::cout << "CALL " << adr << std::endl;
+		SP = PC;
+		PC = adr;
+		
 	}break;
 
 		//ACI D8 Size: 2
