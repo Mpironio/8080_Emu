@@ -81,7 +81,9 @@ void CPU::cycle() {
 
 		//DCR B Size: 1
 	case 0x05: {
-
+		std::cout << "DCR B " << std::hex << (int)REGISTERS[1] << " <- ";
+		REGISTERS[1] -= 1;
+		std::cout << std::hex << (int)REGISTERS[1];
 	}break;
 
 		//MVI B, D8 Size: 2
@@ -151,7 +153,10 @@ void CPU::cycle() {
 
 		//INX D Size: 1
 	case 0x13: {
-
+		std::cout << "INX D " << std::hex << (int)REGISTERS[3] << (int)REGISTERS[4] << " <- ";
+		REGISTERS[4] == 0xff ? REGISTERS[4] = 0x00, REGISTERS[3] += 1 : REGISTERS[4] += 0x01;
+		std::cout << std::hex << (int)REGISTERS[3] << (int)REGISTERS[4] << std::endl;
+		PC += 1;
 	}break;
 
 		//INR D Size: 1
@@ -232,7 +237,10 @@ void CPU::cycle() {
 
 		//INX H Size: 1
 	case 0x23: {
-
+		std::cout << "INX H " << std::hex << (int)REGISTERS[5] << (int)REGISTERS[6] << " <- ";
+		REGISTERS[6] == 0xff ? REGISTERS[6] = 0x00, REGISTERS[5] += 1 : REGISTERS[6] += 0x01;
+		std::cout << std::hex << (int)REGISTERS[5] << (int)REGISTERS[6] << std::endl;
+		PC += 1;
 	}break;
 
 		//INR H Size: 1
