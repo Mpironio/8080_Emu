@@ -83,7 +83,14 @@ void CPU::cycle() {
 	case 0x05: {
 		std::cout << "DCR B " << std::hex << (int)REGISTERS[1] << " <- ";
 		REGISTERS[1] -= 1;
-		std::cout << std::hex << (int)REGISTERS[1];
+		//Flags handling
+		REGISTERS[1] & (0x1 << 7) ? sf = 1 : sf = 0;	//sign flag
+		REGISTERS[1] == 0 ? zf = 1 : zf = 0;			//zero flag
+		REGISTERS[1] % 2 == 0 ? pf = 1 : pf = 0;		//parity flag
+
+
+		std::cout << std::hex << (int)REGISTERS[1] << std::endl;
+		PC += 1;
 	}break;
 
 		//MVI B, D8 Size: 2
@@ -120,8 +127,15 @@ void CPU::cycle() {
 
 		//DCR C Size: 1
 	case 0x0d: {
-		std::cout << "DRC C <- C-1" << std::endl;
-		REGISTERS[1] -= 1;
+		std::cout << "DCR C " << std::hex << (int)REGISTERS[2] << " <- ";
+		REGISTERS[2] -= 1;
+		//Flags handling
+		REGISTERS[2] & (0x1 << 7) ? sf = 1 : sf = 0;	//sign flag
+		REGISTERS[2] == 0 ? zf = 1 : zf = 0;			//zero flag
+		REGISTERS[2] % 2 == 0 ? pf = 1 : pf = 0;		//parity flag
+
+
+		std::cout << std::hex << (int)REGISTERS[2];
 		PC += 1;
 	}break;
 
@@ -187,7 +201,7 @@ void CPU::cycle() {
 		//LDAX D Size: 1
 	case 0x1a: {
 		REGISTERS[0] = MEMORY[(REGISTERS[3] << 8) + REGISTERS[4]];
-		std::cout << "LDAX D  " << "A<- " << std::hex << "[" << (int)REGISTERS[0] << "] rDE" << std::endl;
+		std::cout << "LDAX D  " << "A <- " << std::hex << "[" << (int)REGISTERS[0] << "] rDE" << std::endl;
 		PC += 1;
 	}break;
 
@@ -1030,7 +1044,16 @@ void CPU::cycle() {
 
 		//JNZ adr Size: 3
 	case 0xc2: {
-
+		if(!zf){
+		uint16_t fstB = MEMORY[PC + 1];
+		uint16_t sndB = MEMORY[PC + 2];
+		uint16_t adr = (sndB << 8) + fstB; //Little endian 
+		std::cout << "JNZ " << adr << std::endl;
+		PC = adr;
+		}
+		else {
+			PC += 3;
+		}
 	}break;
 
 		//JMP adr Size: 3
@@ -1069,6 +1092,8 @@ void CPU::cycle() {
 
 		//RET Size: 1
 	case 0xc9: {
+		std::cout << "RET" << std::endl;
+		PC = SP + 1;
 
 	}break;
 
