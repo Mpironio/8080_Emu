@@ -46,9 +46,15 @@ void CPU::loadGame(std::vector<std::string> files) {
 	REGISTERS: A B C D E H L
 			   0 1 2 3 4 5 6
 */
+
+
+//HAY QUE ARREGLAR LO DEL SP
 void CPU::cycle() {
 	uint8_t opcode = MEMORY[PC];
 	uint16_t adr = (MEMORY[PC + 2] << 8) + MEMORY[PC + 1];
+	
+	
+		
 
 	std::cout << std::hex << "Opcode: " << (int)opcode << " Instruction: ";
 	switch (opcode) {
@@ -60,7 +66,8 @@ void CPU::cycle() {
 	}break;
 		//LXI B, D16 Size: 3
 	case 0x01: {
-
+		
+		
 	}break;
 
 		//STAX B Size: 1
@@ -71,12 +78,16 @@ void CPU::cycle() {
 
 		//INX B Size: 1
 	case 0x03: {
-
+		//
 	}break;
 
 		//INR B Size: 1
 	case 0x04: {
-
+		
+		
+		
+		
+		
 	}break;
 
 		//DCR B Size: 1
@@ -87,6 +98,7 @@ void CPU::cycle() {
 		REGISTERS[1] & (0x1 << 7) ? sf = 1 : sf = 0;	//sign flag
 		REGISTERS[1] == 0 ? zf = 1 : zf = 0;			//zero flag
 		REGISTERS[1] % 2 == 0 ? pf = 1 : pf = 0;		//parity flag
+		REGISTERS[1] & 0x0 ? cfa = 1 : cfa = 0;			//auxiliary carry flag
 
 
 		std::cout << std::hex << (int)REGISTERS[1] << std::endl;
@@ -133,6 +145,7 @@ void CPU::cycle() {
 		REGISTERS[2] & (0x1 << 7) ? sf = 1 : sf = 0;	//sign flag
 		REGISTERS[2] == 0 ? zf = 1 : zf = 0;			//zero flag
 		REGISTERS[2] % 2 == 0 ? pf = 1 : pf = 0;		//parity flag
+		REGISTERS[2] & 0x0 ? cfa = 1 : cfa = 0;			//auxiliary carry flag
 
 
 		std::cout << std::hex << (int)REGISTERS[2];
@@ -324,6 +337,13 @@ void CPU::cycle() {
 
 		//STA adr Size: 3
 	case 0x32: {
+		uint8_t fstB = MEMORY[PC + 2];
+		uint8_t sndB = MEMORY[PC + 1];
+		uint16_t adr = (fstB << 8) + sndB;
+		MEMORY[adr] = REGISTERS[0];
+		std::cout << "STA " << adr << std::endl;
+
+		PC += 3;
 
 	}break;
 
@@ -369,7 +389,17 @@ void CPU::cycle() {
 
 		//INR A Size: 1
 	case 0x3c: {
+		std::cout << "INR A " << std::hex << (int)REGISTERS[0] << " <- ";
+		REGISTERS[0] += 1;
+		//Flags handling
+		REGISTERS[0] & (0x1 << 7) ? sf = 1 : sf = 0;	//sign flag
+		REGISTERS[0] == 0 ? zf = 1 : zf = 0;			//zero flag
+		REGISTERS[0] % 2 == 0 ? pf = 1 : pf = 0;		//parity flag
+		REGISTERS[0] & 0xfff ? cfa = 1 : cfa = 0;		//auxiliary carry flag
 
+
+		std::cout << std::hex << (int)REGISTERS[0] << std::endl;
+		PC += 1;
 	}break;
 
 		//DCR A Size: 1
@@ -1052,6 +1082,7 @@ void CPU::cycle() {
 		PC = adr;
 		}
 		else {
+			std::cout << "JNZ " << "zf = 1, no jump" << std::endl;
 			PC += 3;
 		}
 	}break;
@@ -1093,7 +1124,8 @@ void CPU::cycle() {
 		//RET Size: 1
 	case 0xc9: {
 		std::cout << "RET" << std::endl;
-		PC = SP + 1;
+		PC = ((MEMORY[SP] + 1) << 8) + MEMORY[SP];
+		SP += 2;
 
 	}break;
 
