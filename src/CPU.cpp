@@ -1139,7 +1139,8 @@ void CPU::cycle(int& currentCyc) {
 
 		//RET Size: 1
 	case 0xc9: {
-		PC = SP;
+		PC = MEMORY[SP];
+		
 		if (debugPrintOn) std::cout << "RET PC <- " << std::hex << PC << std::endl;
 		SP += 2; //esto está mal
 
@@ -1159,7 +1160,7 @@ void CPU::cycle(int& currentCyc) {
 	case 0xcd: {
 		uint16_t adr = (MEMORY[PC + 2] << 8) + MEMORY[PC + 1];
 		if (debugPrintOn) std::cout << "CALL " << adr << std::endl;
-		SP = PC + 3;
+		MEMORY[SP] = PC + 3; //PC + 3 es un valor entonces no se guarda con "endianess"
 		PC = adr;
 		
 	}break;
