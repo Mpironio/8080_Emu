@@ -14,4 +14,9 @@ Tengo que tomar elegir si quiero emular el procesador como a mi me parezca lógi
 Por ahora voy a seguir con mi implementación solo que cambiando SP y PC a 8bits para que tenga más sentido.
 Voy a estar ahorrando 2 bytes (32bits - 16bits) pero la verdad es que el procesador es tan simple en términos modernos que esos 2bytes son depreciables.
 
+Problemas {
 
+	Cuando hago CALL y guardo el PC siguiente en el stack, se guarda como viene (PC = dc --> SP = dc)
+	yo quiero guardarlo invertido por el endianess (PC = dc --> SP = cd)
+
+}
