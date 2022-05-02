@@ -1,0 +1,17 @@
+Decidí empezar un devlog para ir anotando información que crea relevante al proyecto, que queden registrados los cambios que hago y su propósito
+
+- 2/5/2022
+
+Mi código tiene: 
+* La memoria como 65000~ bytes (*8bits) en un array
+* 7 registros de 8bits
+* SP y PC de 16bits
+
+No tiene sentido que el PC y SP sean de 16bits porque siempre voy a estar direccionando a 8 en mi implementación de la memoria
+La arquitectura original permite direccionar a 16 bits
+Tengo que tomar elegir si quiero emular el procesador como a mi me parezca lógico o como su arquitectura lo indica
+
+Por ahora voy a seguir con mi implementación solo que cambiando SP y PC a 8bits para que tenga más sentido.
+Voy a estar ahorrando 2 bytes (32bits - 16bits) pero la verdad es que el procesador es tan simple en términos modernos que esos 2bytes son depreciables.
+
+

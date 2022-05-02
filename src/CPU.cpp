@@ -45,8 +45,8 @@ void CPU::loadGame(std::vector<std::string> files) {
 }
 
 void CPU::debugCycles(std::string instructionName, int opcode) {
-	std::cout << "Opcode: " << std::hex << opcode << " Instruction: " << instructionName << std::endl;
-	std::cout << "-----------------------------------------------------" << std::endl;
+	std::cout << "Opcode: " << std::hex << opcode << " Instruction: " << instructionName << "\n";
+	std::cout << "-----------------------------------------------------" << "\n";
 }
 
 
@@ -61,15 +61,15 @@ void CPU::debugCycles(std::string instructionName, int opcode) {
 void CPU::cycle(int& currentCyc) {
 	uint8_t opcode = MEMORY[PC];
 	uint16_t adr = (MEMORY[PC + 2] << 8) + MEMORY[PC + 1];
-	
-	bool debugPrintOn = currentCyc > 37388? true : false; //1544 es cuando termina de copiar la memoria
-
+	bool debugPrintOn;
+	//debugPrintOn = currentCyc > 37388? true : false; //1544 es cuando termina de copiar la memoria
+	debugPrintOn = true;
 	if(debugPrintOn) std::cout << std::hex << "Opcode: " << (int)opcode << " Instruction: ";
 	switch (opcode) {
 
 		//NOP Size: 1
 	case 0x00: {
-		if(debugPrintOn) std::cout << "0x00 NOP" << std::endl;
+		if(debugPrintOn) std::cout << "0x00 NOP" << "\n";
 		PC += 1;
 	}break;
 		//LXI B, D16 Size: 3
@@ -80,7 +80,7 @@ void CPU::cycle(int& currentCyc) {
 
 		//STAX B Size: 1
 	case 0x02: {
-		if (debugPrintOn) std::cout << "STAX B" << "[" << std::hex << (int)((MEMORY[1] << 8) + MEMORY[2]) << "] <- " << (int)REGISTERS[0] << "rA" << std::endl;
+		if (debugPrintOn) std::cout << "STAX B" << "[" << std::hex << (int)((MEMORY[1] << 8) + MEMORY[2]) << "] <- " << (int)REGISTERS[0] << "rA" << "\n";
 
 	}break;
 
@@ -109,13 +109,13 @@ void CPU::cycle(int& currentCyc) {
 		REGISTERS[1] & 0x0 ? cfa = 1 : cfa = 0;			//auxiliary carry flag
 
 
-		if (debugPrintOn) std::cout << std::hex << (int)REGISTERS[1] << std::endl;
+		if (debugPrintOn) std::cout << std::hex << (int)REGISTERS[1] << "\n";
 		PC += 1;
 	}break;
 
 		//MVI B, D8 Size: 2
 	case 0x06: {
-		if (debugPrintOn) std::cout << "MVI B, D8  B<- " << std::hex << (int)MEMORY[PC + 1] << std::endl;
+		if (debugPrintOn) std::cout << "MVI B, D8  B<- " << std::hex << (int)MEMORY[PC + 1] << "\n";
 		REGISTERS[1] = MEMORY[PC + 1];
 		PC += 2;
 	}break;
@@ -162,7 +162,7 @@ void CPU::cycle(int& currentCyc) {
 
 		//MVI C, D8 Size: 2
 	case 0x0e: {
-		if (debugPrintOn) std::cout << "MVI C, D8  B<- " << std::hex << (int)MEMORY[PC + 1] << std::endl;
+		if (debugPrintOn) std::cout << "MVI C, D8  B<- " << std::hex << (int)MEMORY[PC + 1] << "\n";
 		REGISTERS[2] = MEMORY[PC + 1];
 		PC += 2;
 	}break;
@@ -176,7 +176,7 @@ void CPU::cycle(int& currentCyc) {
 	case 0x11: {
 		uint8_t fstB = MEMORY[PC + 2];
 		uint8_t sndB = MEMORY[PC + 1];
-		if (debugPrintOn) std::cout << "LXI D, D16  " << std::hex << "D<- " << (int)fstB << " E<- " << (int)sndB << std::endl;
+		if (debugPrintOn) std::cout << "LXI D, D16  " << std::hex << "D<- " << (int)fstB << " E<- " << (int)sndB << "\n";
 		REGISTERS[3] = fstB;
 		REGISTERS[4] = sndB;
 		PC += 3;
@@ -192,7 +192,7 @@ void CPU::cycle(int& currentCyc) {
 	case 0x13: {
 		if (debugPrintOn) std::cout << "INX D " << std::hex << (int)REGISTERS[3] << (int)REGISTERS[4] << " <- ";
 		REGISTERS[4] == 0xff ? REGISTERS[4] = 0x00, REGISTERS[3] += 1 : REGISTERS[4] += 0x01;
-		if (debugPrintOn) std::cout << std::hex << (int)REGISTERS[3] << (int)REGISTERS[4] << std::endl;
+		if (debugPrintOn) std::cout << std::hex << (int)REGISTERS[3] << (int)REGISTERS[4] << "\n";
 		PC += 1;
 	}break;
 
@@ -224,7 +224,7 @@ void CPU::cycle(int& currentCyc) {
 		//LDAX D Size: 1
 	case 0x1a: {
 		REGISTERS[0] = MEMORY[(REGISTERS[3] << 8) + REGISTERS[4]];
-		if (debugPrintOn) std::cout << "LDAX D  " << "A <- " << std::hex << "[" << (int)REGISTERS[0] << "] rDE" << std::endl;
+		if (debugPrintOn) std::cout << "LDAX D  " << "A <- " << std::hex << "[" << (int)REGISTERS[0] << "] rDE" << "\n";
 		PC += 1;
 	}break;
 
@@ -261,7 +261,7 @@ void CPU::cycle(int& currentCyc) {
 	case 0x21: {
 		uint16_t fstB = MEMORY[PC + 2];
 		uint16_t sndB = MEMORY[PC + 1];
-		if (debugPrintOn) std::cout << "LXI H, " << std::hex << (int)fstB << "" << (int)(sndB) << std::endl;
+		if (debugPrintOn) std::cout << "LXI H, " << std::hex << (int)fstB << "" << (int)(sndB) << "\n";
 		REGISTERS[5] = fstB;
 		REGISTERS[6] = sndB;
 		PC += 3;
@@ -276,7 +276,7 @@ void CPU::cycle(int& currentCyc) {
 	case 0x23: {
 		if (debugPrintOn) std::cout << "INX H " << std::hex << (int)REGISTERS[5] << (int)REGISTERS[6] << " <- ";
 		REGISTERS[6] == 0xff ? REGISTERS[6] = 0x00, REGISTERS[5] += 1 : REGISTERS[6] += 0x01;
-		if (debugPrintOn) std::cout << std::hex << (int)REGISTERS[5] << (int)REGISTERS[6] << std::endl;
+		if (debugPrintOn) std::cout << std::hex << (int)REGISTERS[5] << (int)REGISTERS[6] << "\n";
 		PC += 1;
 	}break;
 
@@ -341,7 +341,7 @@ void CPU::cycle(int& currentCyc) {
 		uint8_t sndB = MEMORY[PC + 1];
 		uint16_t adr = (fstB << 8) + sndB;
 		SP = adr;
-		if (debugPrintOn) std::cout << "LXI SP, " << adr << std::endl;
+		if (debugPrintOn) std::cout << "LXI SP, " << adr << "\n";
 		PC += 3;
 	}break;
 
@@ -351,7 +351,7 @@ void CPU::cycle(int& currentCyc) {
 		uint8_t sndB = MEMORY[PC + 1];
 		uint16_t adr = (fstB << 8) + sndB;
 		MEMORY[adr] = REGISTERS[0];
-		if (debugPrintOn) std::cout << "STA " << adr << std::endl;
+		if (debugPrintOn) std::cout << "STA " << adr << "\n";
 
 		PC += 3;
 
@@ -374,7 +374,7 @@ void CPU::cycle(int& currentCyc) {
 
 		//MVI M, D8 Size: 2
 	case 0x36: {
-		if (debugPrintOn) std::cout << "MVI M, D8  B<- " << std::hex << (int)MEMORY[PC + 1] << std::endl;
+		if (debugPrintOn) std::cout << "MVI M, D8  B<- " << std::hex << (int)MEMORY[PC + 1] << "\n";
 		REGISTERS[1] = MEMORY[PC + 1];
 		PC += 2;
 	}break;
@@ -410,7 +410,7 @@ void CPU::cycle(int& currentCyc) {
 		REGISTERS[0] & 0xfff ? cfa = 1 : cfa = 0;		//auxiliary carry flag
 
 
-		if (debugPrintOn) std::cout << std::hex << (int)REGISTERS[0] << std::endl;
+		if (debugPrintOn) std::cout << std::hex << (int)REGISTERS[0] << "\n";
 		PC += 1;
 	}break;
 
@@ -710,7 +710,7 @@ void CPU::cycle(int& currentCyc) {
 		uint8_t regL = REGISTERS[6];
 		uint16_t adr = (REGISTERS[5] << 8) + REGISTERS[6];
 		MEMORY[adr]  = REGISTERS[0];
-		if (debugPrintOn) std::cout << "MOV [" << std::hex << adr << "] <- " << (int)REGISTERS[0] << "rA" << std::endl;
+		if (debugPrintOn) std::cout << "MOV [" << std::hex << adr << "] <- " << (int)REGISTERS[0] << "rA" << "\n";
 		PC += 1;
 	}break;
 
@@ -736,14 +736,14 @@ void CPU::cycle(int& currentCyc) {
 
 		//MOV A, H Size: 1
 	case 0x7c: {
-		if (debugPrintOn) std::cout << "MOV A, H " << std::hex << (int)REGISTERS[5] << std::endl;
+		if (debugPrintOn) std::cout << "MOV A, H " << std::hex << (int)REGISTERS[5] << "\n";
 		REGISTERS[0] = REGISTERS[5];
 		PC += 1;
 	}break;
 
 		//MOV A, L Size: 1
 	case 0x7d: {
-		if (debugPrintOn) std::cout << "MOV A, L " << std::hex << (int)REGISTERS[6] << std::endl;
+		if (debugPrintOn) std::cout << "MOV A, L " << std::hex << (int)REGISTERS[6] << "\n";
 		REGISTERS[0] = REGISTERS[6];
 		PC += 1;
 	}break;
@@ -1094,11 +1094,11 @@ void CPU::cycle(int& currentCyc) {
 		uint16_t fstB = MEMORY[PC + 1];
 		uint16_t sndB = MEMORY[PC + 2];
 		uint16_t adr = (sndB << 8) + fstB; //Little endian 
-		if (debugPrintOn) std::cout << "JNZ " << adr << std::endl;
+		if (debugPrintOn) std::cout << "JNZ " << adr << "\n";
 		PC = adr;
 		}
 		else {
-			if (debugPrintOn) std::cout << "JNZ " << "zf = 1, no jump" << std::endl;
+			if (debugPrintOn) std::cout << "JNZ " << "zf = 1, no jump" << "\n";
 			PC += 3;
 		}
 	}break;
@@ -1108,7 +1108,7 @@ void CPU::cycle(int& currentCyc) {
 		uint16_t fstB = MEMORY[PC + 1];
 		uint16_t sndB = MEMORY[PC + 2];
 		uint16_t adr = (sndB << 8) + fstB; //Little endian 
-		if (debugPrintOn) std::cout << "JMP " << adr <<std::endl;
+		if (debugPrintOn) std::cout << "JMP " << adr <<"\n";
 		PC = adr;
 	}break;
 
@@ -1140,7 +1140,6 @@ void CPU::cycle(int& currentCyc) {
 		//RET Size: 1
 	case 0xc9: {
 		PC = MEMORY[SP];
-		
 		if (debugPrintOn) std::cout << "RET PC <- " << std::hex << PC << std::endl;
 		SP += 2; //esto está mal
 
@@ -1197,7 +1196,7 @@ void CPU::cycle(int& currentCyc) {
 
 		//CNC adr Size: 1
 	case 0xd4: {
-		if (debugPrintOn) std::cout << "PC: " << PC << " CNC adr" << std::endl;
+		if (debugPrintOn) std::cout << "PC: " << PC << " CNC adr" << "\n";
 		if (!cf) {
 
 		}
@@ -1391,7 +1390,7 @@ void CPU::cycle(int& currentCyc) {
 
 		//CPI D8 Size: 2
 	case 0xfe: {
-		if(debugPrintOn) std::cout << "CPI D8" << std::endl;
+		if(debugPrintOn) std::cout << "CPI D8" << "\n";
 		uint8_t data = MEMORY[PC + 1];
 		uint8_t res = REGISTERS[0] - data;
 		//flags
