@@ -4,7 +4,7 @@
 
 
 CPU::CPU() {
-	for (int i = 0; i < 4095; i++) {
+	for (int i = 0; i < (4096*16); i++) {
 		MEMORY[i] = 0;
 	}
 	
@@ -145,7 +145,7 @@ void CPU::cycle(int& currentCyc) {
 
 		//DCR C Size: 1
 	case 0x0d: {
-		if (debugPrintOn) std::cout << "DCR C " << std::hex << (int)REGISTERS[2] << " <- ";
+		if (debugPrintOn) std::cout << "DCR C " << std::hex << (int)REGISTERS[2] << " <- " << (int)REGISTERS[2]-- << "\n";
 		REGISTERS[2] -= 1;
 		//Flags handling
 		REGISTERS[2] & (0x1 << 7) ? sf = 1 : sf = 0;	//sign flag
@@ -335,9 +335,9 @@ void CPU::cycle(int& currentCyc) {
 
 		//LXI SP, D16 Size: 3
 	case 0x31: {
-		uint16_t D16 = (MEMORY[PC + 2] << 8) + MEMORY[PC + 1];
-		SP = &MEMORY[D16];
-		if (debugPrintOn) std::cout << "LXI SP, " << adr << "\n";
+		uint16_t D16 = (MEMORY[PC + 2] << 8) | MEMORY[PC + 1];
+		SP = (uint16_t*)D16;
+		if (debugPrintOn) std::cout << "LXI SP, " << D16 << "\n";
 		PC += 3;
 	}break;
 
@@ -348,7 +348,6 @@ void CPU::cycle(int& currentCyc) {
 		uint16_t adr = (fstB << 8) + sndB;
 		MEMORY[adr] = REGISTERS[0];
 		if (debugPrintOn) std::cout << "STA " << adr << "\n";
-
 		PC += 3;
 
 	}break;
@@ -371,7 +370,8 @@ void CPU::cycle(int& currentCyc) {
 		//MVI M, D8 Size: 2
 	case 0x36: {
 		if (debugPrintOn) std::cout << "MVI M, D8  B<- " << std::hex << (int)MEMORY[PC + 1] << "\n";
-		REGISTERS[1] = MEMORY[PC + 1];
+		uint16_t adr = (REGISTERS[5] << 8) + REGISTERS[6];
+		MEMORY[adr] = MEMORY[PC + 1];
 		PC += 2;
 	}break;
 
@@ -1135,9 +1135,9 @@ void CPU::cycle(int& currentCyc) {
 
 		//RET Size: 1
 	case 0xc9: {
-		PC = *SP;
+		PC = MEMORY[(int)SP];
 		if (debugPrintOn) std::cout << "RET PC <- " << std::hex << PC << std::endl;
-		SP += 2; //esto está mal
+		
 
 	}break;
 
@@ -1155,8 +1155,8 @@ void CPU::cycle(int& currentCyc) {
 	case 0xcd: {
 		uint16_t adr = (MEMORY[PC + 2] << 8) + MEMORY[PC + 1];
 		if (debugPrintOn) std::cout << "CALL " << adr << std::endl;
-		uint16_t reversedAdr = 0;
-		*SP = PC + 3; //solución fea porque solo puedo direccionar a byte en mi implementación
+		MEMORY[(int)SP] = (PC + 3); //falta arreglar esto
+		
 		PC = adr;
 		
 	}break;
@@ -1392,7 +1392,6 @@ void CPU::cycle(int& currentCyc) {
 		uint8_t res = REGISTERS[0] - data;
 		//flags
 		zf = res == 0;	sf = (res & 0x80);	pf = res & 0x1;	cf = REGISTERS[0] < data; 
-		
 		PC += 2;
 	}break;
 

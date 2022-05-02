@@ -20,6 +20,7 @@ Problemas {
 	yo quiero guardarlo invertido por el endianess (PC = dc --> SP = cd)
 
 	~Cuando hablo de PC estoy hablando directamente de la dirección a la que debería volver, osea PC + 3
+
 	-> Encontré una página que invierte números en hexa, debería copiar lo que hace para guardarlo como quiero
 	https://onlinehextools.com/reverse-hex-digits
 
@@ -29,4 +30,10 @@ Problemas {
 	-> Como solo puedo direccionar a byte en mi implementación tenía que guardar PC en MEMORY[SP] el primer byte
 	   y (PC >> 8) en MEMORY[SP + 1]
 
+	*Debería codear que no se pueda escribir en la memoria en el rango de [0, 2000) ya que esa es memoria de solo lectura
+	
+	
 }
+
+Cambié el SP a un puntero porque me parecía que tenía mas sentido, ahora es necesario castear como puntero cuando le asigno algo
+o como int cuando quiero usarlo como un argumento para MEMORIA[]
