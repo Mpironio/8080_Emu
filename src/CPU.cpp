@@ -62,7 +62,7 @@ void CPU::cycle(int& currentCyc) {
 	uint8_t opcode = MEMORY[PC];
 	uint16_t adr = (MEMORY[PC + 2] << 8) + MEMORY[PC + 1];
 	
-	bool debugPrintOn = currentCyc > 1544? true : false; //1544 es cuando termina de copiar la memoria
+	bool debugPrintOn = currentCyc > 37388? true : false; //1544 es cuando termina de copiar la memoria
 
 	if(debugPrintOn) std::cout << std::hex << "Opcode: " << (int)opcode << " Instruction: ";
 	switch (opcode) {
@@ -162,7 +162,9 @@ void CPU::cycle(int& currentCyc) {
 
 		//MVI C, D8 Size: 2
 	case 0x0e: {
-
+		if (debugPrintOn) std::cout << "MVI C, D8  B<- " << std::hex << (int)MEMORY[PC + 1] << std::endl;
+		REGISTERS[2] = MEMORY[PC + 1];
+		PC += 2;
 	}break;
 
 		//RRC Size: 1
