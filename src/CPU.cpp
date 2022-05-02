@@ -1139,7 +1139,7 @@ void CPU::cycle(int& currentCyc) {
 
 		//RET Size: 1
 	case 0xc9: {
-		PC = MEMORY[SP];
+		PC = (MEMORY[SP + 1] << 8) + MEMORY[SP];
 		if (debugPrintOn) std::cout << "RET PC <- " << std::hex << PC << std::endl;
 		SP += 2; //esto está mal
 
@@ -1159,7 +1159,9 @@ void CPU::cycle(int& currentCyc) {
 	case 0xcd: {
 		uint16_t adr = (MEMORY[PC + 2] << 8) + MEMORY[PC + 1];
 		if (debugPrintOn) std::cout << "CALL " << adr << std::endl;
-		MEMORY[SP] = PC + 3; //PC + 3 es un valor entonces no se guarda con "endianess"
+		uint16_t reversedAdr = 0;
+		MEMORY[SP] = PC + 3; //solución fea porque solo puedo direccionar a byte en mi implementación
+		MEMORY[SP + 1] = (PC + 3) >> 8;
 		PC = adr;
 		
 	}break;

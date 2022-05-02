@@ -16,7 +16,17 @@ Voy a estar ahorrando 2 bytes (32bits - 16bits) pero la verdad es que el procesa
 
 Problemas {
 
-	Cuando hago CALL y guardo el PC siguiente en el stack, se guarda como viene (PC = dc --> SP = dc)
+	*Cuando hago CALL y guardo el PC siguiente en el stack, se guarda como viene (PC = dc --> SP = dc)
 	yo quiero guardarlo invertido por el endianess (PC = dc --> SP = cd)
+
+	~Cuando hablo de PC estoy hablando directamente de la dirección a la que debería volver, osea PC + 3
+	-> Encontré una página que invierte números en hexa, debería copiar lo que hace para guardarlo como quiero
+	https://onlinehextools.com/reverse-hex-digits
+
+	-> Lo pensé mal, tenía que acceder a MEMORY[PC + 3] y eso me daba CD para guardarlo en MEMORY[SP]
+	   que el PC fuera 18dc y yo estuviera agarrando el dc fue una "coincidencia"
+
+	-> Como solo puedo direccionar a byte en mi implementación tenía que guardar PC en MEMORY[SP] el primer byte
+	   y (PC >> 8) en MEMORY[SP + 1]
 
 }
