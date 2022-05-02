@@ -9,11 +9,11 @@ public:
     void loadGame(std::vector<std::string> files);
     void cycle(int& currentCycle);
     void debugCycles(std::string instructionName, int opcode);
-    uint8_t MEMORY[65535]; //65k bytes of memory
+    uint16_t MEMORY[4096]; //65k bytes of memory
     uint8_t REGISTERS[7]; // 7 8-bit registers
 
     uint16_t PC;
-    uint16_t SP;
+    uint16_t* SP;
 
     unsigned char cf; //Carry flag
     unsigned char cfa;//Auxiliary carry flag

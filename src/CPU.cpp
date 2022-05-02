@@ -4,7 +4,7 @@
 
 
 CPU::CPU() {
-	for (int i = 0; i < 65535; i++) {
+	for (int i = 0; i < 4095; i++) {
 		MEMORY[i] = 0;
 	}
 	
@@ -13,7 +13,7 @@ CPU::CPU() {
 	}
 
 	PC = 0; 
-	SP = 0;
+	SP = nullptr;
 
 	unsigned char cf = 0; //Carry flag
 	unsigned char cfa= 0;//Auxiliary carry flag
@@ -60,7 +60,6 @@ void CPU::debugCycles(std::string instructionName, int opcode) {
 //HAY QUE ARREGLAR LO DEL SP
 void CPU::cycle(int& currentCyc) {
 	uint8_t opcode = MEMORY[PC];
-	uint16_t adr = (MEMORY[PC + 2] << 8) + MEMORY[PC + 1];
 	bool debugPrintOn;
 	//debugPrintOn = currentCyc > 37388? true : false; //1544 es cuando termina de copiar la memoria
 	debugPrintOn = true;
@@ -80,7 +79,6 @@ void CPU::cycle(int& currentCyc) {
 
 		//STAX B Size: 1
 	case 0x02: {
-		if (debugPrintOn) std::cout << "STAX B" << "[" << std::hex << (int)((MEMORY[1] << 8) + MEMORY[2]) << "] <- " << (int)REGISTERS[0] << "rA" << "\n";
 
 	}break;
 
@@ -115,7 +113,7 @@ void CPU::cycle(int& currentCyc) {
 
 		//MVI B, D8 Size: 2
 	case 0x06: {
-		if (debugPrintOn) std::cout << "MVI B, D8  B<- " << std::hex << (int)MEMORY[PC + 1] << "\n";
+		if (debugPrintOn) std::cout << "MVI B, D8  B<- " << std::hex << (int)MEMORY[PC + 1]  << "\n";
 		REGISTERS[1] = MEMORY[PC + 1];
 		PC += 2;
 	}break;
@@ -337,10 +335,8 @@ void CPU::cycle(int& currentCyc) {
 
 		//LXI SP, D16 Size: 3
 	case 0x31: {
-		uint8_t fstB = MEMORY[PC + 2];
-		uint8_t sndB = MEMORY[PC + 1];
-		uint16_t adr = (fstB << 8) + sndB;
-		SP = adr;
+		uint16_t D16 = (MEMORY[PC + 2] << 8) + MEMORY[PC + 1];
+		SP = &MEMORY[D16];
 		if (debugPrintOn) std::cout << "LXI SP, " << adr << "\n";
 		PC += 3;
 	}break;
@@ -1139,7 +1135,7 @@ void CPU::cycle(int& currentCyc) {
 
 		//RET Size: 1
 	case 0xc9: {
-		PC = (MEMORY[SP + 1] << 8) + MEMORY[SP];
+		PC = *SP;
 		if (debugPrintOn) std::cout << "RET PC <- " << std::hex << PC << std::endl;
 		SP += 2; //esto está mal
 
@@ -1160,8 +1156,7 @@ void CPU::cycle(int& currentCyc) {
 		uint16_t adr = (MEMORY[PC + 2] << 8) + MEMORY[PC + 1];
 		if (debugPrintOn) std::cout << "CALL " << adr << std::endl;
 		uint16_t reversedAdr = 0;
-		MEMORY[SP] = PC + 3; //solución fea porque solo puedo direccionar a byte en mi implementación
-		MEMORY[SP + 1] = (PC + 3) >> 8;
+		*SP = PC + 3; //solución fea porque solo puedo direccionar a byte en mi implementación
 		PC = adr;
 		
 	}break;
