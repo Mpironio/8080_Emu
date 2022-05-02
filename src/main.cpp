@@ -7,16 +7,12 @@ int main() {
 	cpu.loadGame(files);
 
 	bool quit = false;
-	char state = 'n';
+	int cycles = 0;
+	bool debugPrintOn = false;
 	while (!quit) {
-		std::cout << "PC: " << std::hex << cpu.PC << " " << std::endl;
-		cpu.cycle();
-		std::cout << "////////////////////////////////////////////////////" << std::endl << std::endl;
+		if (debugPrintOn) std::cout << "PC: " << std::hex << cpu.PC << " " << std::endl;
+		cpu.cycle(cycles);
+		cycles++;
 	}
-	
-
-		
-	
-
 	return 0;
 }

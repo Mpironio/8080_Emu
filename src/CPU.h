@@ -7,7 +7,8 @@ class CPU{
 public:
     CPU();
     void loadGame(std::vector<std::string> files);
-    void cycle();
+    void cycle(int& currentCycle);
+    void debugCycles(std::string instructionName, int opcode);
     uint8_t MEMORY[65535]; //65k bytes of memory
     uint8_t REGISTERS[7]; // 7 8-bit registers
 
