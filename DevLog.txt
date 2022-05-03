@@ -37,3 +37,14 @@ Problemas {
 
 Cambié el SP a un puntero porque me parecía que tenía mas sentido, ahora es necesario castear como puntero cuando le asigno algo
 o como int cuando quiero usarlo como un argumento para MEMORIA[]
+
+ - 3/5/2022
+
+Borré todos los branches
+Logré arreglar todos los bugs de CALL y RET
+El problema era que SP arrancaba en $2400 y yo lo implemente hacia arriba, cuando [$2400 -> ...] son las direcciones para la pantalla
+entonces cuando hacia clearScreen borraba la pila. Lo arreglé implementando la pila hacia abajo.
+Es decir, cuando pusheo tengo que hacerlo a MEMORY[SP - 1]. 
+Como yo tengo implementada MEMORY en BYTES cuando pusheo tengo que hacerlo a SP-1 y SP-2
+Ahora viene una parte importante que es la de INPUTS Y OUTPUTS
+Estoy averiguando que hace la instrucción EX (OPCODE: 0xeb)

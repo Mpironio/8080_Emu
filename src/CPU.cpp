@@ -13,7 +13,7 @@ CPU::CPU() {
 	}
 
 	PC = 0; 
-	SP = nullptr;
+	SP = 0;
 
 	unsigned char cf = 0; //Carry flag
 	unsigned char cfa= 0;//Auxiliary carry flag
@@ -61,7 +61,7 @@ void CPU::debugCycles(std::string instructionName, int opcode) {
 void CPU::cycle(int& currentCyc) {
 	uint8_t opcode = MEMORY[PC];
 	bool debugPrintOn;
-	//debugPrintOn = currentCyc > 37388? true : false; //1544 es cuando termina de copiar la memoria
+	debugPrintOn = currentCyc > 37388? true : false; //1544 es cuando termina de copiar la memoria
 	debugPrintOn = true;
 	if(debugPrintOn) std::cout << std::hex << "Opcode: " << (int)opcode << " Instruction: ";
 	switch (opcode) {
@@ -160,7 +160,7 @@ void CPU::cycle(int& currentCyc) {
 
 		//MVI C, D8 Size: 2
 	case 0x0e: {
-		if (debugPrintOn) std::cout << "MVI C, D8  B<- " << std::hex << (int)MEMORY[PC + 1] << "\n";
+		if (debugPrintOn) std::cout << "MVI C, D8  C<- " << std::hex << (int)MEMORY[PC + 1] << "\n";
 		REGISTERS[2] = MEMORY[PC + 1];
 		PC += 2;
 	}break;
@@ -216,7 +216,11 @@ void CPU::cycle(int& currentCyc) {
 
 		//DAD D Size: 1
 	case 0x19: {
-
+		uint16_t HL = REGISTERS[6] << 8 | REGISTERS[5];
+		uint16_t DE = REGISTERS[4] << 8 | REGISTERS[3];
+		cf = (HL >> 15) & (DE >> 15); //me fijo si tiene carry
+		if (debugPrintOn) std::cout << "ADD HL + HL <- " << std::hex << (HL + DE) << " CF: " << cf << "\n";
+		PC += 1;
 	}break;
 
 		//LDAX D Size: 1
@@ -290,7 +294,9 @@ void CPU::cycle(int& currentCyc) {
 
 	//MVI H, D8 Size: 2
 	case 0x26: {
-
+		if (debugPrintOn) std::cout << "MVI H, D8  C<- " << std::hex << (int)MEMORY[PC + 1] << "\n";
+		REGISTERS[5] = MEMORY[PC + 1];
+		PC += 2;
 	}break;
 
 	//DAA Size: 1
@@ -300,7 +306,10 @@ void CPU::cycle(int& currentCyc) {
 
 	//DAD H Size: 1
 	case 0x29: {
-
+		uint16_t HL = REGISTERS[6] << 8 | REGISTERS[5];
+		cf = (HL >> 15); //me fijo si tiene carry
+		if (debugPrintOn) std::cout << "ADD HL + HL <- " << std::hex << (HL + HL) << " CF: " << cf << "\n";
+		PC += 1;
 	}break;
 
 	//LHLD adr Size: 3
@@ -336,7 +345,7 @@ void CPU::cycle(int& currentCyc) {
 		//LXI SP, D16 Size: 3
 	case 0x31: {
 		uint16_t D16 = (MEMORY[PC + 2] << 8) | MEMORY[PC + 1];
-		SP = (uint16_t*)D16;
+		SP = D16;
 		if (debugPrintOn) std::cout << "LXI SP, " << D16 << "\n";
 		PC += 3;
 	}break;
@@ -662,7 +671,9 @@ void CPU::cycle(int& currentCyc) {
 
 		//MOV L, A Size: 1
 	case 0x6f: {
-
+		if (debugPrintOn) std::cout << "MOV L <- A" << std::hex << (int)MEMORY[PC + 1] << "\n";
+		REGISTERS[6] = REGISTERS[0];
+		PC += 1;
 	}break;
 
 		//MOV M, B Size: 1
@@ -1135,10 +1146,9 @@ void CPU::cycle(int& currentCyc) {
 
 		//RET Size: 1
 	case 0xc9: {
-		PC = MEMORY[(int)SP];
+		PC = (MEMORY[SP+1]<<8) | MEMORY[SP+2];
 		if (debugPrintOn) std::cout << "RET PC <- " << std::hex << PC << std::endl;
-		
-
+		SP += 2;
 	}break;
 
 		//JZ adr Size: 1
@@ -1153,10 +1163,13 @@ void CPU::cycle(int& currentCyc) {
 
 		//CALL adr Size: 3
 	case 0xcd: {
-		uint16_t adr = (MEMORY[PC + 2] << 8) + MEMORY[PC + 1];
+		uint16_t adr = (MEMORY[PC + 2] << 8) | MEMORY[PC + 1];
 		if (debugPrintOn) std::cout << "CALL " << adr << std::endl;
-		MEMORY[(int)SP] = (PC + 3); //falta arreglar esto
-		
+		SP--;
+		MEMORY[SP] = (PC + 3);
+		SP--;
+		MEMORY[SP] = (PC + 3) >> 8;
+		SP--;
 		PC = adr;
 		
 	}break;
@@ -1202,7 +1215,10 @@ void CPU::cycle(int& currentCyc) {
 
 		//PUSH D Size: 1
 	case 0xd5: {
-
+		MEMORY[SP - 2] = REGISTERS[4];
+		MEMORY[SP - 1] = REGISTERS[3];
+		SP -= 2;
+		PC += 1;
 	}break;
 
 		//SUI D8 Size: 2
@@ -1272,7 +1288,10 @@ void CPU::cycle(int& currentCyc) {
 
 		//PUSH H Size: 1
 	case 0xe5: {
-
+		MEMORY[SP - 2] = REGISTERS[6];
+		MEMORY[SP - 1] = REGISTERS[5];
+		SP -= 2;
+		PC += 1;
 	}break;
 
 		//ANI D8 Size: 2
