@@ -62,7 +62,7 @@ void CPU::cycle(int& currentCyc) {
 	uint8_t opcode = MEMORY[PC];
 	bool debugPrintOn;
 	debugPrintOn = currentCyc > 37388? true : false; //1544 es cuando termina de copiar la memoria
-	debugPrintOn = true;
+	//debugPrintOn = true;
 	if(debugPrintOn) std::cout << std::hex << "Opcode: " << (int)opcode << " Instruction: ";
 	switch (opcode) {
 
@@ -73,8 +73,10 @@ void CPU::cycle(int& currentCyc) {
 	}break;
 		//LXI B, D16 Size: 3
 	case 0x01: {
-		
-		
+		if (debugPrintOn) std::cout << "LXI B, D16: " << std::hex << "B <- " << MEMORY[PC + 2] << MEMORY[PC + 1] << "\n";
+		REGISTERS[1] = MEMORY[PC + 2];
+		REGISTERS[2] = MEMORY[PC + 1];
+		PC += 3;
 	}break;
 
 		//STAX B Size: 1
@@ -125,7 +127,13 @@ void CPU::cycle(int& currentCyc) {
 
 		//DAD B Size: 1
 	case 0x09: {
-
+		if(debugPrintOn) std::cout << "DAD B " << std::hex << "HL += BC " << "\n";
+		uint16_t BC = REGISTERS[2] << 8 | REGISTERS[1];
+		uint16_t HL = REGISTERS[5] << 8 | REGISTERS[4];
+		uint16_t result = HL + BC;
+		REGISTERS[5] = (result & 0xFF00) >> 8;
+		REGISTERS[6] = result & 0xFF;
+		PC += 1;
 	}break;
 
 		//LDAX B Size: 1
@@ -1092,7 +1100,11 @@ void CPU::cycle(int& currentCyc) {
 
 		//POP B Size: 1
 	case 0xc1: {
-
+		if (debugPrintOn) std::cout << "POP B" << std::endl;
+		REGISTERS[2] = MEMORY[SP];
+		REGISTERS[1] = MEMORY[SP + 1];
+		SP += 2;
+		PC += 1;
 	}break;
 
 		//JNZ adr Size: 3
@@ -1126,7 +1138,11 @@ void CPU::cycle(int& currentCyc) {
 
 		//PUSH B Size: 1
 	case 0xc5: {
-
+		if(debugPrintOn) std::cout << "PUSH B" << "\n";
+		MEMORY[SP - 2] = REGISTERS[2];
+		MEMORY[SP - 1] = REGISTERS[1];
+		SP -= 2;
+		PC += 1;
 	}break;
 
 		//ADI D8 Size: 1
@@ -1191,7 +1207,11 @@ void CPU::cycle(int& currentCyc) {
 
 		//POP D Size: 1
 	case 0xd1: {
-
+		if (debugPrintOn) std::cout << "POP D" << std::endl;
+		REGISTERS[4] = MEMORY[SP];
+		REGISTERS[3] = MEMORY[SP + 1];
+		SP += 2;
+		PC += 1;
 	}break;
 
 		//JNC adr Size: 3
@@ -1199,9 +1219,10 @@ void CPU::cycle(int& currentCyc) {
 
 	}break;
 
-		//OUT D8 Size: 1
+		//OUT D8 Size: 2
 	case 0xd3: {
-
+		if(debugPrintOn) std::cout << "OUT, not implemented" << std::endl;
+		PC += 2;
 	}break;
 
 		//CNC adr Size: 1
@@ -1215,6 +1236,7 @@ void CPU::cycle(int& currentCyc) {
 
 		//PUSH D Size: 1
 	case 0xd5: {
+		if(debugPrintOn) std::cout << "PUSH D" << "\n";
 		MEMORY[SP - 2] = REGISTERS[4];
 		MEMORY[SP - 1] = REGISTERS[3];
 		SP -= 2;
@@ -1268,7 +1290,11 @@ void CPU::cycle(int& currentCyc) {
 
 		//POP H Size: 1
 	case 0xe1: {
-
+		if(debugPrintOn) std::cout << "POP H" << std::endl;
+		REGISTERS[6] = MEMORY[SP];
+		REGISTERS[5] = MEMORY[SP + 1];
+		SP += 2;
+		PC += 1;
 	}break;
 
 		//JPO adr Size: 3
@@ -1288,6 +1314,7 @@ void CPU::cycle(int& currentCyc) {
 
 		//PUSH H Size: 1
 	case 0xe5: {
+		if(debugPrintOn) std::cout << "PUSH H" << std::endl;
 		MEMORY[SP - 2] = REGISTERS[6];
 		MEMORY[SP - 1] = REGISTERS[5];
 		SP -= 2;
@@ -1321,7 +1348,15 @@ void CPU::cycle(int& currentCyc) {
 
 		//XCHG Size: 1
 	case 0xeb: {
-
+		if (debugPrintOn) std::cout << "XCHG: H <-> D, L <-> E" << "\n";
+		uint8_t tempH = REGISTERS[5];
+		uint8_t tempL = REGISTERS[6];
+		REGISTERS[5] = REGISTERS[3];
+		REGISTERS[6] = REGISTERS[4];
+		REGISTERS[3] = tempH;
+		REGISTERS[4] = tempL;
+		PC += 1;
+		
 	}break;
 
 		//CPE adr Size: 3

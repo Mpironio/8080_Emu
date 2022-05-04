@@ -48,3 +48,9 @@ Es decir, cuando pusheo tengo que hacerlo a MEMORY[SP - 1].
 Como yo tengo implementada MEMORY en BYTES cuando pusheo tengo que hacerlo a SP-1 y SP-2
 Ahora viene una parte importante que es la de INPUTS Y OUTPUTS
 Estoy averiguando que hace la instrucción EX (OPCODE: 0xeb)
+
+ - 4/5/2022
+La parte importante de IO se ve que por ahora no se hace nada, tiene sentido porque no cree ninguna "pantalla"
+La instrucción EX solo hacia HL <-> DE
+Creo que tengo un bug en algún push/pop porque cuando quiero volver del call que escribe en pantalla salta a cualquier lado
+
